@@ -1,4 +1,5 @@
-﻿using QuanLyBanHang.Data;
+﻿using ClosedXML.Excel;
+using QuanLyBanHang.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -131,6 +132,115 @@ namespace QuanLyBanHang.Forms
             if (rep == DialogResult.Yes)
             {
                 this.Close();
+            }
+        }
+
+        private void btnNhap_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "Nhập dữ liệu từ tập tin Excel";
+            openFileDialog.Filter = "Tập tin Excel|*.xls;*.xlsx";
+            openFileDialog.Multiselect = false;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    DataTable table = new DataTable();
+                    using (XLWorkbook workbook = new XLWorkbook(openFileDialog.FileName))
+                    {
+                        IXLWorksheet worksheet = workbook.Worksheet(1);
+                        bool firstRow = true;
+                        string readRange = "1:1";
+                        foreach (IXLRow row in worksheet.RowsUsed())
+                        {
+                            if (firstRow)
+                            {
+                                readRange = string.Format("{0}:{1}", 1, row.LastCellUsed().Address.ColumnNumber);
+                                foreach (IXLCell cell in row.Cells(readRange))
+                                    table.Columns.Add(cell.Value.ToString());
+                                firstRow = false;
+                            }
+                            else
+                            {
+                                table.Rows.Add();
+                                int cellIndex = 0;
+                                foreach (IXLCell cell in row.Cells(readRange))
+                                {
+                                    table.Rows[table.Rows.Count - 1][cellIndex] = cell.Value.ToString();
+                                    cellIndex++;
+                                }
+                            }
+                        }
+                        if (table.Rows.Count > 0)
+                        {
+                            foreach (DataRow r in table.Rows)
+                            {
+                                KhachHang kh = new KhachHang();
+                                // Lưu ý: File Excel nhập vào cần có các cột tên là HoVaTen, DienThoai, DiaChi
+                                kh.HoVaTen = r["HoVaTen"].ToString();
+                                kh.DienThoai = r["DienThoai"].ToString();
+                                kh.DiaChi = r["DiaChi"].ToString();
+
+                                context.KhachHang.Add(kh);
+                            }
+                            context.SaveChanges();
+
+                            MessageBox.Show("Đã nhập thành công " + table.Rows.Count + " dòng.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            frmKhachHang_Load(sender, e);
+                        }
+                        if (firstRow)
+                            MessageBox.Show("Tập tin Excel rỗng.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+        }
+
+        private void btnXuat_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Xuất dữ liệu ra tập tin Excel";
+            saveFileDialog.Filter = "Tập tin Excel|*.xls;*.xlsx";
+            saveFileDialog.FileName = "KhachHang_" + DateTime.Now.ToShortDateString().Replace("/", "_") + ".xlsx";
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    DataTable table = new DataTable();
+
+                    // Thêm đầy đủ các cột của Khách Hàng
+                    table.Columns.AddRange(new DataColumn[4] {
+                        new DataColumn("ID", typeof(int)),
+                        new DataColumn("HoVaTen", typeof(string)),
+                        new DataColumn("DienThoai", typeof(string)),
+                        new DataColumn("DiaChi", typeof(string))
+                    });
+
+                    var danhSachKH = context.KhachHang.ToList();
+                    if (danhSachKH != null)
+                    {
+                        foreach (var p in danhSachKH)
+                            table.Rows.Add(p.ID, p.HoVaTen, p.DienThoai, p.DiaChi);
+                    }
+
+                    using (XLWorkbook wb = new XLWorkbook())
+                    {
+                        var sheet = wb.Worksheets.Add(table, "KhachHang");
+                        sheet.Columns().AdjustToContents();
+                        wb.SaveAs(saveFileDialog.FileName);
+
+                        MessageBox.Show("Đã xuất dữ liệu ra tập tin Excel thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
             }
         }
     }

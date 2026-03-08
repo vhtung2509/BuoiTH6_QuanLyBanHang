@@ -54,6 +54,8 @@
             btnLuuHoaDon = new Button();
             btnInHoaDon = new Button();
             btnThoat = new Button();
+            btnNhap = new Button();
+            btnXuat = new Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numSoLuongBan).BeginInit();
@@ -283,7 +285,7 @@
             // btnLuuHoaDon
             // 
             btnLuuHoaDon.ForeColor = Color.Blue;
-            btnLuuHoaDon.Location = new Point(223, 497);
+            btnLuuHoaDon.Location = new Point(15, 497);
             btnLuuHoaDon.Name = "btnLuuHoaDon";
             btnLuuHoaDon.Size = new Size(142, 29);
             btnLuuHoaDon.TabIndex = 3;
@@ -293,7 +295,7 @@
             // 
             // btnInHoaDon
             // 
-            btnInHoaDon.Location = new Point(431, 497);
+            btnInHoaDon.Location = new Point(279, 497);
             btnInHoaDon.Name = "btnInHoaDon";
             btnInHoaDon.Size = new Size(142, 29);
             btnInHoaDon.TabIndex = 4;
@@ -303,18 +305,41 @@
             // btnThoat
             // 
             btnThoat.ForeColor = Color.Red;
-            btnThoat.Location = new Point(640, 497);
+            btnThoat.Location = new Point(944, 497);
             btnThoat.Name = "btnThoat";
             btnThoat.Size = new Size(94, 29);
             btnThoat.TabIndex = 5;
             btnThoat.Text = "Thoát";
             btnThoat.UseVisualStyleBackColor = true;
+            btnThoat.Click += btnThoat_Click;
+            // 
+            // btnNhap
+            // 
+            btnNhap.Location = new Point(521, 497);
+            btnNhap.Name = "btnNhap";
+            btnNhap.Size = new Size(123, 29);
+            btnNhap.TabIndex = 6;
+            btnNhap.Text = "Nhập hóa đơn";
+            btnNhap.UseVisualStyleBackColor = true;
+            btnNhap.Click += btnNhap_Click;
+            // 
+            // btnXuat
+            // 
+            btnXuat.Location = new Point(731, 497);
+            btnXuat.Name = "btnXuat";
+            btnXuat.Size = new Size(135, 29);
+            btnXuat.TabIndex = 7;
+            btnXuat.Text = "Xuất hóa đơn";
+            btnXuat.UseVisualStyleBackColor = true;
+            btnXuat.Click += btnXuat_Click;
             // 
             // frmHoaDon_ChiTiet
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1053, 555);
+            Controls.Add(btnXuat);
+            Controls.Add(btnNhap);
             Controls.Add(btnThoat);
             Controls.Add(btnInHoaDon);
             Controls.Add(btnLuuHoaDon);
@@ -363,5 +388,7 @@
         private Button btnLuuHoaDon;
         private Button btnInHoaDon;
         private Button btnThoat;
+        private Button btnNhap;
+        private Button btnXuat;
     }
 }
